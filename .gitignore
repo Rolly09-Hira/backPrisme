@@ -1,0 +1,62 @@
+############################
+# Maven
+############################
+target/
+.mvn/wrapper/maven-wrapper.jar
+
+############################
+# Logs
+############################
+*.log
+logs/
+
+############################
+# Uploads (IMPORTANT)
+############################
+uploads/
+
+############################
+# Environment files
+############################
+.env
+application-local.properties
+
+############################
+# OS
+############################
+.DS_Store
+Thumbs.db
+
+############################
+# STS / Eclipse
+############################
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+############################
+# IntelliJ
+############################
+.idea/
+*.iws
+*.iml
+*.ipr
+
+############################
+# NetBeans
+############################
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+
+############################
+# VS Code
+############################
+.vscode/
