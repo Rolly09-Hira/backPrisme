@@ -31,7 +31,11 @@ public class Fichier {
     // Relations (modifiées - peut appartenir à un module OU à une formation)
     @ManyToOne
     @JoinColumn(name = "module_id")
-    private Module module; // Pour les supports de cours
+    private Module module;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "matiere_id")
+    private Matiere matiere;
 
     @ManyToOne
     @JoinColumn(name = "formation_id")
