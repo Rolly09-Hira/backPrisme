@@ -9,6 +9,7 @@ import java.util.List;
 @Table(name = "utilisateurs")
 @Data
 public class Utilisateur {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,55 +27,33 @@ public class Utilisateur {
     private String motDePasse;
 
     private String role;
+
     private String telephone;
 
-    @Column(name = "date_naissance")
-    private LocalDateTime dateNaissance;
-
-    private String sexe;
+    private Boolean actif = false;
 
     @Column(name = "photo_profil")
     private String photoProfil;
 
-    @Column(columnDefinition = "TEXT")
-    private String bio;
-
-    private String statut;
-
     @Column(name = "date_creation", updatable = false)
     private LocalDateTime dateCreation;
 
-    @Column(name = "derniere_connexion")
-    private LocalDateTime derniereConnexion;
+    @OneToMany(mappedBy = "expediteur")
+    private List<MessageConversation> messagesEnvoyes;
 
-    private Boolean actif = true;
+    @OneToMany(mappedBy = "destinataire")
+    private List<MessageConversation> messagesRecus;
 
-    @Column(name = "email_verifie")
-    private Boolean emailVerifie = false;
+    @OneToMany(mappedBy = "utilisateur")
+    private List<Conversation> conversationsUtilisateur;
 
-    @Column(name = "telephone_verifie")
-    private Boolean telephoneVerifie = false;
-
-    // Relations
-    @OneToOne(mappedBy = "utilisateur", cascade = CascadeType.ALL)
-    private Adresse adresse;
-
-    @OneToMany(mappedBy = "utilisateur", cascade = CascadeType.ALL)
-    private List<Inscription> inscriptions;
-
-    @OneToMany(mappedBy = "expediteur", cascade = CascadeType.ALL)
-    private List<Message> messagesEnvoyes;
-
-    @OneToMany(mappedBy = "destinataire", cascade = CascadeType.ALL)
-    private List<Message> messagesRecus;
+    @OneToMany(mappedBy = "admin")
+    private List<Conversation> conversationsAdmin;
 
     @PrePersist
     protected void onCreate() {
         dateCreation = LocalDateTime.now();
-        if (role == null) role = "VISITEUR";
-        if (statut == null) statut = "ACTIF";
-        if (actif == null) actif = true;
-        if (emailVerifie == null) emailVerifie = false;
-        if (telephoneVerifie == null) telephoneVerifie = false;
+        if (role == null) role = "UTILISATEUR";
+        if (actif == null) actif = false;
     }
 }
