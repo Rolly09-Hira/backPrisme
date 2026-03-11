@@ -5,9 +5,10 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "messages")
+@Table(name = "messages_conversation")
 @Data
-public class Message {
+public class MessageConversation {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,11 +24,15 @@ public class Message {
     @Column(name = "date_lecture")
     private LocalDateTime dateLecture;
 
-    @Column(name = "conversation_id")
-    private String conversationId;
-
     @Column(name = "piece_jointe")
     private String pieceJointe;
+
+    @Enumerated(EnumType.STRING)
+    private TypeMessage type = TypeMessage.TEXTE;
+
+    @ManyToOne
+    @JoinColumn(name = "conversation_id", nullable = false)
+    private Conversation conversation;
 
     @ManyToOne
     @JoinColumn(name = "expediteur_id", nullable = false)

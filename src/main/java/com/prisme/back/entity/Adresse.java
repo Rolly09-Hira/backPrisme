@@ -10,7 +10,6 @@ public class Adresse {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String rue;
     private String ville;
     private String codePostal;

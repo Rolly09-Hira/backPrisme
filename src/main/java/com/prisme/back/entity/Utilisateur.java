@@ -2,6 +2,8 @@ package com.prisme.back.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -22,38 +24,25 @@ public class Utilisateur {
     @Column(unique = true, nullable = false)
     private String email;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String motDePasse;
 
     private String role;
     private String telephone;
 
     @Column(name = "date_naissance")
-    private LocalDateTime dateNaissance;
+    private LocalDate dateNaissance;
 
-    private String sexe;
+    private Boolean actif = false;
 
     @Column(name = "photo_profil")
     private String photoProfil;
 
-    @Column(columnDefinition = "TEXT")
-    private String bio;
-
-    private String statut;
-
     @Column(name = "date_creation", updatable = false)
     private LocalDateTime dateCreation;
 
-    @Column(name = "derniere_connexion")
-    private LocalDateTime derniereConnexion;
-
-    private Boolean actif = true;
-
-    @Column(name = "email_verifie")
-    private Boolean emailVerifie = false;
-
-    @Column(name = "telephone_verifie")
-    private Boolean telephoneVerifie = false;
+    @Column(name = "matricule", nullable = true, unique = true)
+    private String matricule;
 
     // Relations
     @OneToOne(mappedBy = "utilisateur", cascade = CascadeType.ALL)
@@ -62,19 +51,22 @@ public class Utilisateur {
     @OneToMany(mappedBy = "utilisateur", cascade = CascadeType.ALL)
     private List<Inscription> inscriptions;
 
-    @OneToMany(mappedBy = "expediteur", cascade = CascadeType.ALL)
-    private List<Message> messagesEnvoyes;
+    @OneToMany(mappedBy = "expediteur")
+    private List<MessageConversation> messagesEnvoyes;
 
-    @OneToMany(mappedBy = "destinataire", cascade = CascadeType.ALL)
-    private List<Message> messagesRecus;
+    @OneToMany(mappedBy = "destinataire")
+    private List<MessageConversation> messagesRecus;
+
+    @OneToMany(mappedBy = "utilisateur")
+    private List<Conversation> conversationsUtilisateur;
+
+    @OneToMany(mappedBy = "admin")
+    private List<Conversation> conversationsAdmin;
 
     @PrePersist
     protected void onCreate() {
         dateCreation = LocalDateTime.now();
-        if (role == null) role = "VISITEUR";
-        if (statut == null) statut = "ACTIF";
-        if (actif == null) actif = true;
-        if (emailVerifie == null) emailVerifie = false;
-        if (telephoneVerifie == null) telephoneVerifie = false;
+        if (role == null) role = "UTILISATEUR";
+        if (actif == null) actif = false;
     }
 }
