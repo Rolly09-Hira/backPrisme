@@ -51,11 +51,17 @@ public class Utilisateur {
     @OneToMany(mappedBy = "utilisateur", cascade = CascadeType.ALL)
     private List<Inscription> inscriptions;
 
-    @OneToMany(mappedBy = "expediteur", cascade = CascadeType.ALL)
-    private List<Message> messagesEnvoyes;
+    @OneToMany(mappedBy = "expediteur")
+    private List<MessageConversation> messagesEnvoyes;
 
-    @OneToMany(mappedBy = "destinataire", cascade = CascadeType.ALL)
-    private List<Message> messagesRecus;
+    @OneToMany(mappedBy = "destinataire")
+    private List<MessageConversation> messagesRecus;
+
+    @OneToMany(mappedBy = "utilisateur")
+    private List<Conversation> conversationsUtilisateur;
+
+    @OneToMany(mappedBy = "admin")
+    private List<Conversation> conversationsAdmin;
 
     @PrePersist
     protected void onCreate() {

@@ -24,15 +24,12 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
         http
-                // ✅ Activer CORS
+                // Activation CORS avec la configuration centralisée
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-
-                // ❌ Désactiver CSRF (API REST stateless)
+                // Désactivation CSRF pour API stateless
                 .csrf(csrf -> csrf.disable())
-
-                // 🔐 Autorisations
+                // Règles d'autorisation (issues de la première version)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
@@ -40,52 +37,47 @@ public class SecurityConfig {
                         .requestMatchers("/api/adresses/**").authenticated()
                         .anyRequest().authenticated()
                 )
-
-                // 🔄 Stateless (JWT)
+                // Session stateless (JWT)
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-
-                // 🔑 Ajouter filtre JWT avant UsernamePasswordAuthenticationFilter
+                // Filtre JWT avant l'authentification standard
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
-    // 🔥 Configuration CORS complète
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
 
-        CorsConfiguration configuration = new CorsConfiguration();
+        // Fusion des origines :
+        // - Version 1 : http://localhost:5173
+        // - Version 2 : * (mais incompatible avec credentials)
+        // - Version 3 : allowedOriginPatterns = "*" (compatible avec credentials)
+        // On adopte allowedOriginPatterns = "*" pour accepter toutes les origines avec credentials
+        config.setAllowedOriginPatterns(List.of("*"));
 
-        // Autoriser ton frontend Vite
-        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+        // Méthodes autorisées : reprise de la version 3 (complète)
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
 
-        // Méthodes autorisées
-        configuration.setAllowedMethods(
-                List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
-        );
+        // Headers autorisés : toutes les versions utilisent "*"
+        config.setAllowedHeaders(List.of("*"));
 
-        // Headers autorisés
-        configuration.setAllowedHeaders(List.of("*"));
+        // Credentials : vrai pour les versions 1 et 3, faux pour la 2. On garde vrai (plus permissif)
+        config.setAllowCredentials(true);
 
-        // Autoriser les cookies / credentials si nécessaire
-        configuration.setAllowCredentials(true);
+        // Durée de cache preflight : 3600s (versions 1 et 3)
+        config.setMaxAge(3600L);
 
-        // Durée de cache du preflight (optionnel mais pro)
-        configuration.setMaxAge(3600L);
-
-        UrlBasedCorsConfigurationSource source =
-                new UrlBasedCorsConfigurationSource();
-
-        source.registerCorsConfiguration("/**", configuration);
-
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
         return source;
     }
 
-    // 🔐 Encoder mot de passe
     @Bean
     public PasswordEncoder passwordEncoder() {
+        // Bean de la version 1
         return new BCryptPasswordEncoder();
     }
 }
